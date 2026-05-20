@@ -1,4 +1,6 @@
-# CF-Workers-NvidiaAir-CheckIn
+# NVIDIA_Air 自动续期脚本 CF-Workers-NvidiaAir-CheckIn
+
+![TG](/demo.png)
 
 Cloudflare Workers 版本的 NVIDIA Air 自动续期脚本。
 
