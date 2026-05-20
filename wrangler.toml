@@ -2,3 +2,6 @@ name = "nvidiaair-checkin"
 main = "worker.js"
 compatibility_date = "2026-05-21"
 keep_vars = true
+
+[triggers]
+crons = ["0 */12 * * *"]

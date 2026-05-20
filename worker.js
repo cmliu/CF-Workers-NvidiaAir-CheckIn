@@ -4,14 +4,25 @@ const 续期小时数 = 71;
 const Air请求头 = {
 	Accept: "application/json",
 	"Content-Type": "application/json",
-	"User-Agent": "air-sdk/1.3.1",
-	"X-Air-Sdk-Version": "1.3.1",
+	"User-Agent": "air-sdk/2.21.0",
+	"X-Air-Sdk-Version": "2.21.0",
 };
 
 export default {
 	async fetch(请求, 环境) {
 		if (!["GET", "POST"].includes(请求.method)) {
 			return 返回Json({ ok: false, error: "Method not allowed" }, 405);
+		}
+
+		const 网址 = new URL(请求.url);
+		if (网址.pathname === "/") {
+			return 返回Json(获取准备状态(环境));
+		}
+
+		const 路径令牌 = 读取路径令牌(网址.pathname);
+		const 触发令牌 = 读取触发令牌(环境);
+		if (路径令牌 !== 触发令牌) {
+			return 返回Json({ ok: false, error: "Not found" }, 404);
 		}
 
 		try {
@@ -30,6 +41,24 @@ export default {
 		);
 	},
 };
+
+function 获取准备状态(环境) {
+	const 变量状态 = {
+		NVIDIA_AIR_API_KEY: 变量是否存在(环境, "NVIDIA_AIR_API_KEY"),
+		SIMULATION_ID: 变量是否存在(环境, "SIMULATION_ID"),
+		TOKEN: 变量是否存在(环境, "TOKEN"),
+	};
+	const 已准备就绪 = 变量状态.NVIDIA_AIR_API_KEY && 变量状态.SIMULATION_ID;
+
+	return {
+		ok: 已准备就绪,
+		ready: 已准备就绪,
+		message: 已准备就绪 ? "准备就绪" : "缺少必要变量",
+		variables: 变量状态,
+		token_default_used: !变量状态.TOKEN,
+		manual_trigger_path: 变量状态.TOKEN ? "/<TOKEN>" : "/run",
+	};
+}
 
 async function 续期仿真(环境) {
 	const NVIDIA_AIR_API_KEY = 读取必填变量(环境, "NVIDIA_AIR_API_KEY");
@@ -89,6 +118,30 @@ function 读取必填变量(环境, 变量名) {
 		throw new Error(`Missing required environment variable: ${变量名}`);
 	}
 	return 变量值.trim();
+}
+
+function 读取触发令牌(环境) {
+	const 变量值 = 环境?.TOKEN;
+	if (typeof 变量值 !== "string" || 变量值.trim() === "") {
+		return "run";
+	}
+	return 变量值.trim();
+}
+
+function 读取路径令牌(路径) {
+	if (!路径 || 路径 === "/") {
+		return "";
+	}
+	const 去掉首尾斜杠 = 路径.replace(/^\/+|\/+$/g, "");
+	if (去掉首尾斜杠.includes("/")) {
+		return "";
+	}
+	return decodeURIComponent(去掉首尾斜杠);
+}
+
+function 变量是否存在(环境, 变量名) {
+	const 变量值 = 环境?.[变量名];
+	return typeof 变量值 === "string" && 变量值.trim() !== "";
 }
 
 function 转成Utc秒字符串(时间戳) {
