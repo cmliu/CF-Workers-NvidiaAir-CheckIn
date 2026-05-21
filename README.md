@@ -12,7 +12,7 @@
 ### 🔑 获取 `NVIDIA_AIR_API_KEY`
 
 1. 打开 [NGC API Keys 页面](https://org.ngc.nvidia.com/account/api-keys)，登录你的 NVIDIA / NGC 账号。
-2. 创建新的 API Key，填写 Key 名称，例如 `cf-workers-air-renew`，并设置`1年`过期时间。
+2. 创建新的 API Key，填写 Key 名称，例如 `cf-workers-air-renew`，并设置`12 months`过期时间。
 3. 在 `Key Permissions` 的 `Services Included` 里选择以下权限：
    - `NVIDIA Air Image Claimer Access`
    - `NVIDIA Air`
